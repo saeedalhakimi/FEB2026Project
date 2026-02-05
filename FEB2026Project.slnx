@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="DOT10.Business/DOT10.Business.csproj" />
+  <Project Path="DOT10.Domain/DOT10.Domain.csproj" />
+  <Project Path="FEB2026Project.RUSTApi/FEB2026Project.RUSTApi.csproj" />
+</Solution>
