@@ -10,28 +10,6 @@ namespace FEB2026Project.RUSTApi.Contracts.AuthDtos.Requests
     public sealed record RegisterUserDto
     {
         /// <summary>
-        /// User's first name.
-        /// </summary>
-        [Required]
-        [MaxLength(50)]
-        public string FirstName { get; init; } = string.Empty;
-
-        /// <summary>
-        /// User's last name.
-        /// </summary>
-        [Required]
-        [MaxLength(50)]
-        public string LastName { get; init; } = string.Empty;
-
-        /// <summary>
-        /// User's date of birth (must not be in the future).
-        /// </summary>
-        [Required]
-        [NotInFuture(ErrorMessage = "Date of birth cannot be in the future.")]
-        [MinimumAge(13)]
-        public DateTime DateOfBirth { get; init; }
-
-        /// <summary>
         /// User's email address (used as login).
         /// </summary>
         [Required]

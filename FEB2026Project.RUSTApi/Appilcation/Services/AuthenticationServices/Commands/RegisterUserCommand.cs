@@ -6,9 +6,6 @@
     /// </summary>
     public sealed record RegisterUserCommand
     (
-        string FirstName,
-        string LastName,
-        DateTime DateOfBirth,
         string Email,
         string Password,
         string CorrelationId

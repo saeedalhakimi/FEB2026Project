@@ -37,7 +37,6 @@ namespace FEB2026Project.RUSTApi.Controllers.V1.Authentications
             {
                 _logger.LogInformation("Request received for {Operation} at {Path}", operationName, HttpContext.Request.Path);
                 var command = AuthMappers.ToRegisterUserCommand(dto, correlationId);
-
                 var result = await _authService.RegisterUserCommandHandler(command, cancellationToken);
                 if (!result.IsSuccess) return HandleResult(result, correlationId);
 

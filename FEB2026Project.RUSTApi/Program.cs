@@ -1,13 +1,17 @@
 using Asp.Versioning;
+using FEB2026Project.RUSTApi.Appilcation.Services.JWTServices;
 using FEB2026Project.RUSTApi.Application.Extensions;
 using FEB2026Project.RUSTApi.Data;
 using FEB2026Project.RUSTApi.Data.ContextModel;
 using FEB2026Project.RUSTApi.Filters;
 using FEB2026Project.RUSTApi.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +82,52 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
        .AddEntityFrameworkStores<DataContext>()
        .AddDefaultTokenProviders();
 
+//----------------------------------------------------------
+//JWT settings
+//----------------------------------------------------------
+var jwtSettings = new JwtSettings();
+builder.Configuration.Bind(nameof(JwtSettings), jwtSettings);
+
+var jwtSection = builder.Configuration.GetSection(nameof(JwtSettings));
+builder.Services.Configure<JwtSettings>(jwtSection);
+
+if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.Key))
+{
+    throw new InvalidOperationException("JwtSettings configuration is missing or invalid.");
+}
+
+builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+       .AddJwtBearer(options =>
+       {
+           options.SaveToken = true;
+           options.TokenValidationParameters = new TokenValidationParameters
+           {
+               ValidateIssuer = true,
+               ValidateAudience = true,
+               ValidateLifetime = true,
+               ValidateIssuerSigningKey = true,
+               ValidIssuer = jwtSettings.Issuer,
+               ValidAudience = jwtSettings.Audience,
+               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+           };
+       });
+
+//----------------------------------------------------------
+//Auth
+//----------------------------------------------------------
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin", "SystemAdmin")); // Accepts either rol
+    options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Manager"));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -103,6 +153,7 @@ app.UseSerilogRequestLogging(options =>
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
