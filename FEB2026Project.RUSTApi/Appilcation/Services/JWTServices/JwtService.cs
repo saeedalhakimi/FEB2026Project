@@ -34,6 +34,10 @@ namespace FEB2026Project.RUSTApi.Appilcation.Services.JWTServices
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            // Get the secret key from environment variable
+            var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+            _jwtSettings.Key = secretKey!;
+
             // Create the security key and signing credentials
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

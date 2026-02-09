@@ -91,6 +91,10 @@ builder.Configuration.Bind(nameof(JwtSettings), jwtSettings);
 var jwtSection = builder.Configuration.GetSection(nameof(JwtSettings));
 builder.Services.Configure<JwtSettings>(jwtSection);
 
+// Load the secret key from environment variable and set it in jwtSettings
+var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+jwtSettings.Key = secretKey!;
+
 if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.Key))
 {
     throw new InvalidOperationException("JwtSettings configuration is missing or invalid.");
@@ -119,7 +123,7 @@ builder.Services.AddAuthentication(options =>
        });
 
 //----------------------------------------------------------
-//Auth
+// Authorization
 //----------------------------------------------------------
 builder.Services.AddAuthorization(options =>
 {
