@@ -1,10 +1,10 @@
-﻿using DOT10.Business.Application.Errors;
+﻿using FEB2026Project.RUSTApi.Application.Errors;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace DOT10.Business.Application.Operations
+namespace FEB2026Project.RUSTApi.Application.Operations
 {
     public class OperationResult<T>
     {

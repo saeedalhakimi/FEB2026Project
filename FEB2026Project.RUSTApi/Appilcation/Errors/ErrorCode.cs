@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace DOT10.Business.Application.Errors
+namespace FEB2026Project.RUSTApi.Application.Errors
 {
     public enum ErrorCode
     {

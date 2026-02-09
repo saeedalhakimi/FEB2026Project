@@ -6,7 +6,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace DOT10.Business.Application.Errors
+namespace FEB2026Project.RUSTApi.Application.Errors
 {
     public static class ErrorCodeExtensions
     {
