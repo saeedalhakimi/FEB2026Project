@@ -7,5 +7,6 @@ namespace FEB2026Project.RUSTApi.Appilcation.Services.AuthenticationServices
     public interface IAuthenticationService
     {
             Task<OperationResult<ResponseWithTokensDto>> RegisterUserCommandHandler(RegisterUserCommand command, CancellationToken cancellationToken);
+            Task<OperationResult<ResponseWithTokensDto>> LoginUserCommandHandler(LoginUserCommand command, CancellationToken cancellationToken);
     }
 }

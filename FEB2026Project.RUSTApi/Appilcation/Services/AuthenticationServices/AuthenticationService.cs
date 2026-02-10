@@ -1,12 +1,12 @@
 ﻿using FEB2026Project.RUSTApi.Appilcation.Services.AuthenticationServices.Commands;
 using FEB2026Project.RUSTApi.Appilcation.Services.ErrorHandlingServices;
 using FEB2026Project.RUSTApi.Appilcation.Services.JWTServices;
-using FEB2026Project.RUSTApi.Application.Errors;
 using FEB2026Project.RUSTApi.Application.Operations;
-using FEB2026Project.RUSTApi.Data;
+using FEB2026Project.RUSTApi.Application.Errors;
 using FEB2026Project.RUSTApi.Data.ContextModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using FEB2026Project.RUSTApi.Data;
 
 namespace FEB2026Project.RUSTApi.Appilcation.Services.AuthenticationServices
 {
@@ -120,6 +120,87 @@ namespace FEB2026Project.RUSTApi.Appilcation.Services.AuthenticationServices
                 }
             }
 
+        }
+        public async Task<OperationResult<ResponseWithTokensDto>> LoginUserCommandHandler(LoginUserCommand command, CancellationToken cancellationToken)
+        {
+            var correlationId = command.CorrelationId ?? Guid.NewGuid().ToString();
+            var operationName = nameof(LoginUserCommandHandler);
+            using (_logger.BeginScope(new Dictionary<string, object> { ["CorrelationId"] = correlationId, ["Operation"] = operationName }))
+            {
+                _logger.LogInformation("LoginUserCommand Handler started for {Email}", command.Email);
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    _logger.LogInformation("Finding user by email: {Email}", command.Email);
+                    var user = await _userManager.FindByEmailAsync(command.Email);
+                    if (user is null)
+                    {
+                        var errorMessage = "Invalid username or password.";
+                        _logger.LogWarning(errorMessage);
+                        return OperationResult<ResponseWithTokensDto>.Failure(new Error(ErrorCode.NotFound, details: errorMessage, correlationId: correlationId));
+                    }
+
+                    if (!user.IsActive)
+                    {
+                        _logger.LogWarning("User {user} is no longer active.", command.Email);
+                        return OperationResult<ResponseWithTokensDto>.Failure(new Error(ErrorCode.Unauthorized, details: $"Access to '{operationName}' was denied due to insufficient permissions.", correlationId: correlationId));
+                    }
+
+                    if (await _userManager.IsLockedOutAsync(user))
+                    {
+                        _logger.LogWarning($"Account is locked.. Contact Admin..");
+                        return OperationResult<ResponseWithTokensDto>.Failure(new Error(ErrorCode.Unauthorized, details: $"User '{user}' is currently locked. Please try again later or contact support.", correlationId: correlationId));
+                    }
+
+                    _logger.LogInformation("Verifying password for user: {Username}", command.Email);
+                    if (!await _userManager.CheckPasswordAsync(user, command.Password))
+                    {
+                        await _userManager.AccessFailedAsync(user);
+                        var attemptsLeft = _userManager.Options.Lockout.MaxFailedAccessAttempts - await _userManager.GetAccessFailedCountAsync(user);
+                        var errorMessage = attemptsLeft > 0
+                        ? $"Invalid username or password. You have {attemptsLeft} more attempt(s) before your account gets locked."
+                        : "Your account has been locked due to multiple failed login attempts. Please try again later or contact support.";
+
+                        _logger.LogWarning(errorMessage);
+                        return OperationResult<ResponseWithTokensDto>.Failure(new Error(ErrorCode.Unauthorized, details: errorMessage, correlationId: correlationId));
+                    }
+
+                    _logger.LogInformation("Retrieving roles for user: {UserId}", user.Id);
+                    var roles = (await _userManager.GetRolesAsync(user)).ToList();
+
+                    _logger.LogInformation("Generating tokens for user: {UserId}", user.Id);
+                    var token = _jwtService.GenerateAccessToken(user, roles);
+                    var refreshToken = _jwtService.GenerateRefreshToken();
+                    var refreshTokenEntity = new RefreshToken
+                    {
+                        Token = refreshToken,
+                        ExpiryDate = _jwtService.GetRefreshTokenExpiryDate(), // Use the new method
+                        IdentityId = user.Id
+                    };
+
+                    _logger.LogInformation("Storing refresh token for user: {UserId}", user.Id);
+                    await _dataContext.RefreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
+                    await _dataContext.SaveChangesAsync(cancellationToken);
+
+                    _logger.LogInformation("LoginUserCommand Handler completed successfully for {Email}", command.Email);
+                    return OperationResult<ResponseWithTokensDto>.Success(new ResponseWithTokensDto
+                    {
+                        AccessToken = token,
+                        RefreshToken = refreshToken,
+                        Message = "Login successful."
+                    });
+
+                }
+                catch (OperationCanceledException ex)
+                {
+                    return _errorHandlingService.HandleCancelationTokenException<ResponseWithTokensDto>(ex, operationName, correlationId);
+                }
+                catch (Exception ex)
+                {
+                    return _errorHandlingService.HandleUnknownExceptions<ResponseWithTokensDto>(ex, operationName, correlationId);
+                }
+            }
         }
     }
 }

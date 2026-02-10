@@ -45,5 +45,26 @@ namespace FEB2026Project.RUSTApi.Controllers.V1.Authentications
             }
         }
 
+        [HttpPost(ApiRoutes.AuthRoutes.Login, Name = "Login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ValidateModel]
+        public async Task<IActionResult> Login([FromBody] LoginUserDto dto, CancellationToken cancellationToken)
+        {
+            var operationName = nameof(Login);
+            var correlationId = HttpContext.Items["CorrelationId"]?.ToString() ?? Guid.NewGuid().ToString();
+            using (_logger.BeginScope("Operation: {OperationName}, CorrelationId: {CorrelationId}", operationName, correlationId))
+            {
+                _logger.LogInformation("Request received for {Operation} at {Path}", operationName, HttpContext.Request.Path);
+                var command = AuthMappers.ToLoginUserCommand(dto, correlationId);
+                var result = await _authService.LoginUserCommandHandler(command, cancellationToken);
+                if (!result.IsSuccess) return HandleResult(result, correlationId);
+                
+                _logger.LogInformation("Request for {Operation} completed successfully at {Path}", operationName, HttpContext.Request.Path);
+                return Ok(result.Data);
+            }
+        }
     }
 }

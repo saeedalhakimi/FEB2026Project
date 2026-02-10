@@ -14,5 +14,14 @@ namespace FEB2026Project.RUSTApi.Mappers.AuthMappers
                     CorrelationId: correlationId
                 ); 
         }
+
+        public static LoginUserCommand ToLoginUserCommand(LoginUserDto dto, string correlationId) 
+        {
+                return new LoginUserCommand(
+                    Email: dto.Email.Trim().ToLowerInvariant(),
+                    Password: dto.Password,
+                    CorrelationId: correlationId
+                );
+        }
     }
 }
