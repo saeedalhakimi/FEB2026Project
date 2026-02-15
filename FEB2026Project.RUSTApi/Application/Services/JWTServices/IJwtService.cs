@@ -1,6 +1,6 @@
 ﻿using FEB2026Project.RUSTApi.Data.ContextModel;
 
-namespace FEB2026Project.RUSTApi.Appilcation.Services.JWTServices
+namespace FEB2026Project.RUSTApi.Application.Services.JWTServices
 {
     public interface IJwtService
     {

@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace FEB2026Project.RUSTApi.Appilcation.Services.JWTServices
+namespace FEB2026Project.RUSTApi.Application.Services.JWTServices
 {
     public class JwtService : IJwtService
     {

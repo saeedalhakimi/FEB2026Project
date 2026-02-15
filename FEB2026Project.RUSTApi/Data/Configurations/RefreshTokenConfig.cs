@@ -17,6 +17,9 @@ namespace FEB2026Project.RUSTApi.Data.Configurations
             builder.Property(rt => rt.IdentityId).IsRequired();
             builder.Property(rt => rt.IsUsed).IsRequired();
             builder.Property(rt => rt.IsRevoked).IsRequired();
+
+            //// Configure indexes
+            //builder.HasIndex(rt => rt.Token);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace FEB2026Project.RUSTApi.Appilcation.Services.AuthenticationServices.Commands
+﻿namespace FEB2026Project.RUSTApi.Application.Services.AuthenticationServices.Commands
 {
     /// <summary>
     /// Command to register a new user.

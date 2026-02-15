@@ -1,5 +1,5 @@
 ﻿
-using FEB2026Project.RUSTApi.Appilcation.Services.AuthenticationServices.Commands;
+using FEB2026Project.RUSTApi.Application.Services.AuthenticationServices.Commands;
 using FEB2026Project.RUSTApi.Contracts.AuthDtos.Requests;
 
 namespace FEB2026Project.RUSTApi.Mappers.AuthMappers
@@ -22,6 +22,22 @@ namespace FEB2026Project.RUSTApi.Mappers.AuthMappers
                     Password: dto.Password,
                     CorrelationId: correlationId
                 );
+        }
+
+        public static RefreshTokenCommand ToRefreshTokenCommand(RefreshTokenDto dto, string correlationId) 
+        {
+                    return new RefreshTokenCommand(
+                        RefreshToken: dto.RefreshToken,
+                        CorrelationId: correlationId
+                    );
+        }
+
+        public static LogoutCommand ToLogoutCommand(RefreshTokenDto dto, string correlationId) 
+        {
+                    return new LogoutCommand(
+                        RefreshToken: dto.RefreshToken,
+                        CorrelationId: correlationId
+                    );
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿
-using FEB2026Project.RUSTApi.Appilcation.Services.AuthenticationServices;
-using FEB2026Project.RUSTApi.Appilcation.Services.ErrorHandlingServices;
+using FEB2026Project.RUSTApi.Application.Services.AuthenticationServices;
+using FEB2026Project.RUSTApi.Application.Services.ErrorHandlingServices;
+using FEB2026Project.RUSTApi.Application.Services.RoleServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace FEB2026Project.RUSTApi.Application.Extensions
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IErrorHandlingService, ErrorHandlingService>();
+            services.AddScoped<IRoleService, RoleService>();
 
             return services;
         }

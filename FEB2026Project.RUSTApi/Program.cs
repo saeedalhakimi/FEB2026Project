@@ -1,5 +1,5 @@
 using Asp.Versioning;
-using FEB2026Project.RUSTApi.Appilcation.Services.JWTServices;
+using FEB2026Project.RUSTApi.Application.Services.JWTServices;
 using FEB2026Project.RUSTApi.Application.Extensions;
 using FEB2026Project.RUSTApi.Data;
 using FEB2026Project.RUSTApi.Data.ContextModel;

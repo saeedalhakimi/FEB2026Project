@@ -1,6 +1,6 @@
 ﻿using FEB2026Project.RUSTApi.Application.Operations;
 
-namespace FEB2026Project.RUSTApi.Appilcation.Services.ErrorHandlingServices
+namespace FEB2026Project.RUSTApi.Application.Services.ErrorHandlingServices
 {
     public interface IErrorHandlingService
     {
