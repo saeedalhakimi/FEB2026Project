@@ -20,5 +20,14 @@
             public const string UpdateRole = "update/{id}";
             public const string DeleteRole = "delete/{id}";
         }
+
+        public static class UserRoutes
+        {
+            public const string BaseRoute = "api/v{version:apiVersion}/users";
+            public const string GetAllUsers = "all";
+            public const string GetUserById = "{id}";
+            public const string UpdateUser = "update/{id}";
+            public const string DeleteUser = "delete/{id}";
+        }
     }
 }

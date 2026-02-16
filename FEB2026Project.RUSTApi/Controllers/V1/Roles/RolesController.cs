@@ -8,6 +8,7 @@ using FEB2026Project.RUSTApi.Contracts.RolesDto.Responses;
 using FEB2026Project.RUSTApi.Filters;
 using FEB2026Project.RUSTApi.Models;
 using FEB2026Project.RUSTApi.URLs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace FEB2026Project.RUSTApi.Controllers.V1.Roles
     [ApiVersion("1.0")]
     [Route(ApiRoutes.RoleRoutes.BaseRoute)]
     [ApiController]
+    [Authorize(Policy = "AdminOnly")]
     public class RolesController : BaseController<RolesController>
     {
         private readonly IRoleService _handler;
@@ -44,6 +46,7 @@ namespace FEB2026Project.RUSTApi.Controllers.V1.Roles
         [ProducesResponseType(typeof(RoleDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ValidateGuid("id")]
         public async Task<ActionResult<RoleDto>> GetRoleByID([FromRoute] string id, CancellationToken cancellationToken)
         {
             using var _ = BeginRequestScope();
@@ -87,6 +90,7 @@ namespace FEB2026Project.RUSTApi.Controllers.V1.Roles
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateModel]
+        [ValidateGuid("id")]
         public async Task<ActionResult<RoleDto>> UpdateRole([FromRoute] string id, [FromBody] UpdateRoleDto dto, CancellationToken cancellationToken)
         {
             using var _ = BeginRequestScope();
@@ -104,6 +108,7 @@ namespace FEB2026Project.RUSTApi.Controllers.V1.Roles
         // =========================================================
         [HttpDelete(ApiRoutes.RoleRoutes.GetRoleById, Name = "DeleteRole")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ValidateGuid("id")]
         public async Task<IActionResult> DeleteRole([FromRoute] string id, CancellationToken cancellationToken)
         {
             using var _ = BeginRequestScope();

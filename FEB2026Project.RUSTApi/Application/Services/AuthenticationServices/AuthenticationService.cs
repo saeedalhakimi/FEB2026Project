@@ -7,8 +7,6 @@ using FEB2026Project.RUSTApi.Data;
 using FEB2026Project.RUSTApi.Data.ContextModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FEB2026Project.RUSTApi.Application.Services.AuthenticationServices
 {
